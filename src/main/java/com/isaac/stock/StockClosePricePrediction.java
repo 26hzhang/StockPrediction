@@ -55,9 +55,8 @@ public class StockClosePricePrediction {
         // save model
         log.info("saving model...");
         File locationToSave = new File("src/main/resources/StockPriceLSTM.zip");
-        //Updater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this if you want to train your network more in the future
-        boolean saveUpdater = true;
-        ModelSerializer.writeModel(net, locationToSave, saveUpdater);
+        //saveUpdater: i.e., the state for Momentum, RMSProp, Adagrad etc. Save this if you want to train your network more in the future
+        ModelSerializer.writeModel(net, locationToSave, true);
         
         // load model
         //log.info("load model...");
@@ -75,16 +74,11 @@ public class StockClosePricePrediction {
         }
 
         // print out
-        //System.out.println(String.format("%20s", "Predict") + String.format("%20s", "Actual"));
         System.out.println("Predict" + "," + "Actual");
-        for (int i = 0; i < predicts.length; i++) {
-            //System.out.println(String.format("%20s", String.valueOf(predicts[i])) +
-                    //String.format("%20s", String.valueOf(actuals[i])));
-            System.out.println(predicts[i] + "," + actuals[i]);
-        }
+        for (int i = 0; i < predicts.length; i++) System.out.println(predicts[i] + "," + actuals[i]);
 
         // plot predicts and actual values
         log.info("plot...");
-        // TODO
+        PlotUtil.plot(predicts, actuals);
     }
 }
