@@ -104,7 +104,7 @@
                         <configuration>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.isaac.stock.StockClosePricePrediction</mainClass>
+                                    <mainClass>com.isaac.stock.predict.StockPricePrediction</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
