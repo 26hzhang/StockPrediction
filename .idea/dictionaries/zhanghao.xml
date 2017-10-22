@@ -2,7 +2,9 @@
   <dictionary name="zhanghao">
     <words>
       <w>actu</w>
+      <w>bardata</w>
       <w>closeprice</w>
+      <w>eurusd</w>
     </words>
   </dictionary>
 </component>

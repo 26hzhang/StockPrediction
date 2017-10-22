@@ -1,17 +1,18 @@
 package com.isaac.stock.utils;
 
-/*import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.spark.ml.feature.MinMaxScaler;
+import org.apache.spark.ml.feature.VectorAssembler;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.functions;
 import org.datavec.api.util.ClassPathResource;
 
-import java.io.IOException;*/
+import java.io.IOException;
 
+// java.lang.ExceptionInInitializerError  ??????
 public class DataPreview {
-    /*public static void main (String[] args) throws IOException {
+    public static void main (String[] args) throws IOException {
         SparkSession spark = SparkSession.builder().master("local").appName("DataProcess").getOrCreate();
         String filename = "prices-split-adjusted.csv";
         String symbol = "GOOG";
@@ -43,5 +44,5 @@ public class DataPreview {
                 .setInputCol("features").setOutputCol("normalizedFeatures")
                 .fit(data).transform(data)
                 .drop("features").toDF("features");
-    }*/
+    }
 }

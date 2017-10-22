@@ -24,20 +24,19 @@ public class StockDataSetIterator implements DataSetIterator {
 
     private final int VECTOR_SIZE = 5;
     private int miniBatchSize;
-    private int exampleLength;
+    private int exampleLength = 22; // default 22, say, 22 working days per month
 
     private double[] minNum = new double[VECTOR_SIZE];
     private double[] maxNum = new double[VECTOR_SIZE];
 
-    private PriceCategory category;
+    private PriceCategory category = PriceCategory.CLOSE; // default to train to predict the CLOSE price model
 
     private LinkedList<Integer> exampleStartOffsets = new LinkedList<>();
 
     private List<StockData> train;
     private List<Pair<INDArray, INDArray>> test;
 
-    public StockDataSetIterator(String filename, String symbol, int miniBatchSize, int exampleLength, double splitRatio,
-                         PriceCategory category) {
+    public StockDataSetIterator (String filename, String symbol, int miniBatchSize, int exampleLength, double splitRatio, PriceCategory category) {
         List<StockData> stockDataList = readStockDataFromFile(filename, symbol);
         this.miniBatchSize = miniBatchSize;
         this.exampleLength = exampleLength;
@@ -68,23 +67,21 @@ public class StockDataSetIterator implements DataSetIterator {
         int actualMiniBatchSize = Math.min(num, exampleStartOffsets.size());
         INDArray input = Nd4j.create(new int[] {actualMiniBatchSize, VECTOR_SIZE, exampleLength}, 'f');
         INDArray label;
-        if (category.equals(PriceCategory.ALL))
-            label = Nd4j.create(new int[] {actualMiniBatchSize, VECTOR_SIZE, exampleLength}, 'f');
-        else
-            label = Nd4j.create(new int[] {actualMiniBatchSize, 1, exampleLength}, 'f');
+        if (category.equals(PriceCategory.ALL)) label = Nd4j.create(new int[] {actualMiniBatchSize, VECTOR_SIZE, exampleLength}, 'f');
+        else label = Nd4j.create(new int[] {actualMiniBatchSize, 1, exampleLength}, 'f');
         for (int index = 0; index < actualMiniBatchSize; index++) {
             int startIdx = exampleStartOffsets.removeFirst();
             int endIdx = startIdx + exampleLength;
             StockData curData = train.get(startIdx);
             StockData nextData;
             for (int i = startIdx; i < endIdx; i++) {
-                nextData = train.get(i + 1);
                 int c = i - startIdx;
                 input.putScalar(new int[] {index, 0, c}, (curData.getOpen() - minNum[0]) / (maxNum[0] - minNum[0]));
                 input.putScalar(new int[] {index, 1, c}, (curData.getClose() - minNum[1]) / (maxNum[1] - minNum[1]));
                 input.putScalar(new int[] {index, 2, c}, (curData.getLow() - minNum[2]) / (maxNum[2] - minNum[2]));
                 input.putScalar(new int[] {index, 3, c}, (curData.getHigh() - minNum[3]) / (maxNum[3] - minNum[3]));
                 input.putScalar(new int[] {index, 4, c}, (curData.getVolume() - minNum[4]) / (maxNum[4] - minNum[4]));
+                nextData = train.get(i + 1);
                 if (category.equals(PriceCategory.ALL)) {
                     label.putScalar(new int[] {index, 0, c}, (nextData.getOpen() - minNum[1]) / (maxNum[1] - minNum[1]));
                     label.putScalar(new int[] {index, 1, c}, (nextData.getClose() - minNum[1]) / (maxNum[1] - minNum[1]));
@@ -177,7 +174,7 @@ public class StockDataSetIterator implements DataSetIterator {
             StockData stock = stockDataList.get(i + exampleLength);
             INDArray label;
             if (category.equals(PriceCategory.ALL)) {
-                label = Nd4j.create(new int[]{VECTOR_SIZE}, 'f');
+                label = Nd4j.create(new int[]{VECTOR_SIZE}, 'f'); // ordering is set as 'f', faster construct
                 label.putScalar(new int[] {0}, stock.getOpen());
                 label.putScalar(new int[] {1}, stock.getClose());
                 label.putScalar(new int[] {2}, stock.getLow());

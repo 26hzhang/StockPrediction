@@ -28,6 +28,7 @@ public class RecurrentNets {
     private static final int lstmLayer2Size = 256;
     private static final int denseLayerSize = 32;
     private static final double dropoutRatio = 0.2;
+    private static final int truncatedBPTTLength = 22;
 
     public static MultiLayerNetwork buildLstmNetworks(int nIn, int nOut) {
         MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
@@ -37,7 +38,6 @@ public class RecurrentNets {
                 .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
                 .weightInit(WeightInit.XAVIER)
                 .updater(Updater.RMSPROP)
-                .rmsDecay(0.95)
                 .regularization(true)
                 .l2(1e-4)
                 .list()
@@ -66,9 +66,9 @@ public class RecurrentNets {
                         .activation(Activation.IDENTITY)
                         .lossFunction(LossFunctions.LossFunction.MSE)
                         .build())
-                .backpropType(BackpropType.TruncatedBPTT) // can be ignored
-                .tBPTTForwardLength(22) // since foreward and backward length are same as exampleLength
-                .tBPTTBackwardLength(22)
+                .backpropType(BackpropType.TruncatedBPTT)
+                .tBPTTForwardLength(truncatedBPTTLength)
+                .tBPTTBackwardLength(truncatedBPTTLength)
                 .pretrain(false)
                 .backprop(true)
                 .build();

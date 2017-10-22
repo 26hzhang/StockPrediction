@@ -4,6 +4,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYSeries;
@@ -41,12 +42,12 @@ public class PlotUtil {
 		// X-axis
 		final NumberAxis domainAxis = (NumberAxis) xyPlot.getDomainAxis();
 		domainAxis.setRange((int) index[0], (int) (index[index.length - 1] + 2));
-		//domainAxis.setTickUnit(new NumberTickUnit(20));
+		domainAxis.setTickUnit(new NumberTickUnit(20));
 		domainAxis.setVerticalTickLabels(true);
 		// Y-axis
 		final NumberAxis rangeAxis = (NumberAxis) xyPlot.getRangeAxis();
 		rangeAxis.setRange(min, max);
-		//rangeAxis.setTickUnit(new NumberTickUnit(50));
+		rangeAxis.setTickUnit(new NumberTickUnit(50));
 		final ChartPanel panel = new ChartPanel(chart);
 		final JFrame f = new JFrame();
 		f.add(panel);
@@ -62,19 +63,19 @@ public class PlotUtil {
 	}
 
 	private static int minValue (double[] predicts, double[] actuals) {
-		int min = Integer.MAX_VALUE;
+		double min = Integer.MAX_VALUE;
 		for (int i = 0; i < predicts.length; i++) {
-			if (min > (int) predicts[i]) min = (int) predicts[i];
-			if (min > (int) actuals[i]) min = (int) actuals[i];
+			if (min > predicts[i]) min = predicts[i];
+			if (min > actuals[i]) min = actuals[i];
 		}
 		return (int) (min * 0.98);
 	}
 
 	private static int maxValue (double[] predicts, double[] actuals) {
-		int max = Integer.MIN_VALUE;
+		double max = Integer.MIN_VALUE;
 		for (int i = 0; i < predicts.length; i++) {
-			if (max < (int) predicts[i]) max = (int) predicts[i];
-			if (max < (int) actuals[i]) max = (int) actuals[i];
+			if (max < predicts[i]) max = predicts[i];
+			if (max < actuals[i]) max = actuals[i];
 		}
 		return (int) (max * 1.02);
 	}
