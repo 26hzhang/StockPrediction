@@ -13,6 +13,7 @@
         <deeplearning4j.version>0.9.1</deeplearning4j.version>
         <slf4j.version>1.7.21</slf4j.version>
         <opencsv.version>3.9</opencsv.version>
+        <guava.version>23.0</guava.version>
         <jfreechart.version>1.0.19</jfreechart.version>
         <spark.version>2.1.0</spark.version>
     </properties>
@@ -96,6 +97,12 @@
     		<artifactId>jfreechart</artifactId>
     		<version>${jfreechart.version}</version>
 		</dependency>
+        <!-- Guava dependency -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

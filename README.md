@@ -1,4 +1,5 @@
 # Plain Stock Prediction
+
 Plain Stock Price Prediction via RNNs with Graves LSTM unit.
 
 Training and Predicting a specific feature by setting `PriceCategory` in `com.isaac.stock.predict.StockPricePrediction.java` as:

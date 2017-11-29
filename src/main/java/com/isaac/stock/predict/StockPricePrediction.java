@@ -8,7 +8,6 @@ import javafx.util.Pair;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.util.ModelSerializer;
 import org.nd4j.linalg.api.ndarray.INDArray;
-import org.nd4j.linalg.dataset.DataSet;
 import org.nd4j.linalg.factory.Nd4j;
 import org.nd4j.linalg.io.ClassPathResource;
 import org.slf4j.Logger;
@@ -28,17 +27,17 @@ public class StockPricePrediction {
 
     private static final Logger log = LoggerFactory.getLogger(StockPricePrediction.class);
 
+    private static int exampleLength = 22; // time series length, assume 22 working days per month
+
     public static void main (String[] args) throws IOException {
         String file = new ClassPathResource("prices-split-adjusted.csv").getFile().getAbsolutePath();
         String symbol = "GOOG"; // stock name
         int batchSize = 64; // mini-batch size
-        int exampleLength = 22; // time series length, assume 22 working days per month
         double splitRatio = 0.9; // 90% for training, 10% for testing
         int epochs = 100; // training epochs
 
         log.info("Create dataSet iterator...");
         PriceCategory category = PriceCategory.CLOSE; // CLOSE: predict close price
-        //PriceCategory category = PriceCategory.ALL; // ALL: predict all features
         StockDataSetIterator iterator = new StockDataSetIterator(file, symbol, batchSize, exampleLength, splitRatio, category);
         log.info("Load test dataset...");
         List<Pair<INDArray, INDArray>> test = iterator.getTestDataSet();
@@ -63,39 +62,48 @@ public class StockPricePrediction {
 
         log.info("Testing...");
         if (category.equals(PriceCategory.ALL)) {
-            INDArray max = Nd4j.create(iterator.getMaxNum());
-            INDArray min = Nd4j.create(iterator.getMinNum());
-            INDArray[] predicts = new INDArray[test.size()];
-            INDArray[] actuals = new INDArray[test.size()];
-            for (int i = 0; i < test.size(); i++) {
-                predicts[i] = net.rnnTimeStep(test.get(i).getKey()).getRow(exampleLength - 1).mul(max.sub(min)).add(min);
-                actuals[i] = test.get(i).getValue();
-            }
-            log.info("Print out Predictions and Actual Values...");
-            log.info("Predict\tActual");
-            for (int i = 0; i < predicts.length; i++) log.info(predicts[i] + "\t" + actuals[i]);
-            log.info("Plot...");
-            plotAll(predicts, actuals);
+            INDArray max = Nd4j.create(iterator.getMaxArray());
+            INDArray min = Nd4j.create(iterator.getMinArray());
+            predictAllCategories(net, test, max, min);
         } else {
-            double max = iterator.getMaxNum()[1];
-            double min = iterator.getMinNum()[1];
-            double[] predicts = new double[test.size()];
-            double[] actuals = new double[test.size()];
-            for (int i = 0; i < test.size(); i++) {
-                predicts[i] = net.rnnTimeStep(test.get(i).getKey()).getDouble(exampleLength - 1) * (max - min) + min;
-                actuals[i] = test.get(i).getValue().getDouble(0);
-            }
-            log.info("Print out Predictions and Actual Values...");
-            log.info("Predict,Actual");
-            for (int i = 0; i < predicts.length; i++) log.info(predicts[i] + "," + actuals[i]);
-            log.info("Plot...");
-            PlotUtil.plot(predicts, actuals, String.valueOf(category));
+            double max = iterator.getMaxNum(category);
+            double min = iterator.getMinNum(category);
+            predictPriceOneAhead(net, test, max, min, category);
         }
         log.info("Done...");
     }
 
-    // plot all predictions
-    private static void plotAll(INDArray[] predicts, INDArray[] actuals) {
+    /** Predict one feature of a stock one-day ahead */
+    private static void predictPriceOneAhead (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, double max, double min, PriceCategory category) {
+        double[] predicts = new double[testData.size()];
+        double[] actuals = new double[testData.size()];
+        for (int i = 0; i < testData.size(); i++) {
+            predicts[i] = net.rnnTimeStep(testData.get(i).getKey()).getDouble(exampleLength - 1) * (max - min) + min;
+            actuals[i] = testData.get(i).getValue().getDouble(0);
+        }
+        log.info("Print out Predictions and Actual Values...");
+        log.info("Predict,Actual");
+        for (int i = 0; i < predicts.length; i++) log.info(predicts[i] + "," + actuals[i]);
+        log.info("Plot...");
+        PlotUtil.plot(predicts, actuals, String.valueOf(category));
+    }
+
+    private static void predictPriceMultiple (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, double max, double min) {
+        // TODO
+    }
+
+    /** Predict all the features (open, close, low, high prices and volume) of a stock one-day ahead */
+    private static void predictAllCategories (MultiLayerNetwork net, List<Pair<INDArray, INDArray>> testData, INDArray max, INDArray min) {
+        INDArray[] predicts = new INDArray[testData.size()];
+        INDArray[] actuals = new INDArray[testData.size()];
+        for (int i = 0; i < testData.size(); i++) {
+            predicts[i] = net.rnnTimeStep(testData.get(i).getKey()).getRow(exampleLength - 1).mul(max.sub(min)).add(min);
+            actuals[i] = testData.get(i).getValue();
+        }
+        log.info("Print out Predictions and Actual Values...");
+        log.info("Predict\tActual");
+        for (int i = 0; i < predicts.length; i++) log.info(predicts[i] + "\t" + actuals[i]);
+        log.info("Plot...");
         for (int n = 0; n < 5; n++) {
             double[] pred = new double[predicts.length];
             double[] actu = new double[actuals.length];
@@ -115,4 +123,5 @@ public class StockPricePrediction {
             PlotUtil.plot(pred, actu, name);
         }
     }
+
 }
