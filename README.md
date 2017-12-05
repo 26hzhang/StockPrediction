@@ -1,5 +1,7 @@
 # Plain Stock Prediction
 
+![Authour](https://img.shields.io/badge/Author-Zhang%20Hao%20(Isaac%20Changhau)-blue.svg)
+
 Plain Stock Price Prediction via RNNs with Graves LSTM unit.
 
 Training and Predicting a specific feature by setting `PriceCategory` in `com.isaac.stock.predict.StockPricePrediction.java` as:
