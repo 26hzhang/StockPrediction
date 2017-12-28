@@ -1,6 +1,6 @@
 # Plain Stock Prediction
 
-![Authour](https://img.shields.io/badge/Author-Zhang%20Hao%20(Isaac%20Changhau)-blue.svg)
+![Authour](https://img.shields.io/badge/Author-Zhang%20Hao%20(Isaac%20Changhau)-blue.svg) ![](https://img.shields.io/badge/Java-1.8-brightgreen.svg) ![](https://img.shields.io/badge/DeepLearning4J-0.9.1-yellowgreen.svg) ![](https://img.shields.io/badge/ND4J-0.9.1-yellowgreen.svg) ![](https://img.shields.io/badge/Guava-23.0-yellowgreen.svg) ![](https://img.shields.io/badge/OpenCSV-3.9-yellowgreen.svg) ![](https://img.shields.io/badge/Spark-2.1.0-yellowgreen.svg)
 
 Plain Stock Price Prediction via RNNs with Graves LSTM unit.
 
