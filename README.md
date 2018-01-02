@@ -25,3 +25,5 @@ PriceCategory category = PriceCategory.ALL; // ALL: train and predict all featur
 **Demo Result**
 
 <img src="predict.png" align=center />
+
+**A Useful GitHub Repository**: [timestocome/Test-stock-prediction-algorithms](https://github.com/timestocome/Test-stock-prediction-algorithms), which contains much information, methods and sources about predict stock and market movements.
