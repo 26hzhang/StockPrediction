@@ -95,7 +95,7 @@ public class StockDataSetIterator implements DataSetIterator {
                 input.putScalar(new int[] {index, 4, c}, (curData.getVolume() - minArray[4]) / (maxArray[4] - minArray[4]));
                 nextData = train.get(i + 1);
                 if (category.equals(PriceCategory.ALL)) {
-                    label.putScalar(new int[] {index, 0, c}, (nextData.getOpen() - minArray[1]) / (maxArray[1] - minArray[1]));
+                    label.putScalar(new int[] {index, 0, c}, (nextData.getOpen() - minArray[0]) / (maxArray[0] - minArray[0]));
                     label.putScalar(new int[] {index, 1, c}, (nextData.getClose() - minArray[1]) / (maxArray[1] - minArray[1]));
                     label.putScalar(new int[] {index, 2, c}, (nextData.getLow() - minArray[2]) / (maxArray[2] - minArray[2]));
                     label.putScalar(new int[] {index, 3, c}, (nextData.getHigh() - minArray[3]) / (maxArray[3] - minArray[3]));
